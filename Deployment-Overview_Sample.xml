@@ -1,0 +1,412 @@
+<?xml version="1.0"?>
+<?mso-application progid="Excel.Sheet"?>
+<Workbook xmlns="urn:schemas-microsoft-com:office:spreadsheet"
+ xmlns:o="urn:schemas-microsoft-com:office:office"
+ xmlns:x="urn:schemas-microsoft-com:office:excel"
+ xmlns:ss="urn:schemas-microsoft-com:office:spreadsheet"
+ xmlns:html="http://www.w3.org/TR/REC-html40">
+  <DocumentProperties xmlns="urn:schemas-microsoft-com:office:office">
+    <Title>Deployment Overview Sample</Title>
+    <Author>Cascade</Author>
+    <Created>2026-02-04T09:13:00Z</Created>
+  </DocumentProperties>
+
+  <Styles>
+    <Style ss:ID="Default" ss:Name="Normal">
+      <Alignment ss:Vertical="Center"/>
+      <Borders/>
+      <Font ss:FontName="Calibri" ss:Size="11"/>
+      <Interior/>
+      <NumberFormat/>
+      <Protection/>
+    </Style>
+
+    <Style ss:ID="sHeader">
+      <Font ss:FontName="Calibri" ss:Size="11" ss:Bold="1" ss:Color="#FFFFFF"/>
+      <Interior ss:Color="#1F2937" ss:Pattern="Solid"/>
+      <Borders>
+        <Border ss:Position="Bottom" ss:LineStyle="Continuous" ss:Weight="1" ss:Color="#111827"/>
+      </Borders>
+    </Style>
+
+    <Style ss:ID="sSubtle">
+      <Font ss:FontName="Calibri" ss:Size="11" ss:Color="#374151"/>
+    </Style>
+
+    <Style ss:ID="sLink">
+      <Font ss:FontName="Calibri" ss:Size="11" ss:Color="#1D4ED8" ss:Underline="Single"/>
+    </Style>
+
+    <Style ss:ID="sOk">
+      <Font ss:FontName="Calibri" ss:Size="11" ss:Color="#065F46" ss:Bold="1"/>
+    </Style>
+
+    <Style ss:ID="sWarn">
+      <Font ss:FontName="Calibri" ss:Size="11" ss:Color="#92400E" ss:Bold="1"/>
+    </Style>
+
+    <Style ss:ID="sBad">
+      <Font ss:FontName="Calibri" ss:Size="11" ss:Color="#991B1B" ss:Bold="1"/>
+    </Style>
+  </Styles>
+
+  <Worksheet ss:Name="README">
+    <Table>
+      <Column ss:Width="260"/>
+      <Column ss:Width="760"/>
+
+      <Row>
+        <Cell ss:StyleID="sHeader"><Data ss:Type="String">Section</Data></Cell>
+        <Cell ss:StyleID="sHeader"><Data ss:Type="String">Details</Data></Cell>
+      </Row>
+
+      <Row>
+        <Cell><Data ss:Type="String">Purpose</Data></Cell>
+        <Cell><Data ss:Type="String">Management overview of cluster deployments (Mira QA → Pavo Stage → Aquila Prod), build attempts, and test evidence.</Data></Cell>
+      </Row>
+      <Row>
+        <Cell><Data ss:Type="String">Definitions</Data></Cell>
+        <Cell><Data ss:Type="String">Mira success = deploy attempt + functional tests pass. On failure, rollback to previous stable build. Pavo runs nightly sanity. Aquila is production.</Data></Cell>
+      </Row>
+      <Row>
+        <Cell><Data ss:Type="String">Data sources</Data></Cell>
+        <Cell><Data ss:Type="String">Fill these with your real sources: CI job URL, CD/deploy tool URL, and test report URL (JUnit/TestRail/Allure/S3 link).</Data></Cell>
+      </Row>
+      <Row>
+        <Cell><Data ss:Type="String">How to use</Data></Cell>
+        <Cell><Data ss:Type="String">Append-only logs in DeployAttempts and TestRuns. CurrentState is a snapshot. Rollups uses simple formulas/pivot (optional).</Data></Cell>
+      </Row>
+    </Table>
+  </Worksheet>
+
+  <Worksheet ss:Name="Services">
+    <Table>
+      <Column ss:Width="180"/>
+      <Column ss:Width="260"/>
+      <Column ss:Width="200"/>
+      <Column ss:Width="120"/>
+
+      <Row>
+        <Cell ss:StyleID="sHeader"><Data ss:Type="String">service_id</Data></Cell>
+        <Cell ss:StyleID="sHeader"><Data ss:Type="String">service_name</Data></Cell>
+        <Cell ss:StyleID="sHeader"><Data ss:Type="String">owner</Data></Cell>
+        <Cell ss:StyleID="sHeader"><Data ss:Type="String">tier</Data></Cell>
+      </Row>
+
+      <Row><Cell><Data ss:Type="String">authn</Data></Cell><Cell><Data ss:Type="String">AuthN</Data></Cell><Cell><Data ss:Type="String">Identity Team</Data></Cell><Cell><Data ss:Type="String">critical</Data></Cell></Row>
+      <Row><Cell><Data ss:Type="String">authz</Data></Cell><Cell><Data ss:Type="String">AuthZ</Data></Cell><Cell><Data ss:Type="String">Identity Team</Data></Cell><Cell><Data ss:Type="String">critical</Data></Cell></Row>
+      <Row><Cell><Data ss:Type="String">account-management</Data></Cell><Cell><Data ss:Type="String">Account-management</Data></Cell><Cell><Data ss:Type="String">Accounts Team</Data></Cell><Cell><Data ss:Type="String">high</Data></Cell></Row>
+      <Row><Cell><Data ss:Type="String">activate-device-direct</Data></Cell><Cell><Data ss:Type="String">Activate-Device-Direct</Data></Cell><Cell><Data ss:Type="String">Activation Team</Data></Cell><Cell><Data ss:Type="String">high</Data></Cell></Row>
+      <Row><Cell><Data ss:Type="String">activate-inventory</Data></Cell><Cell><Data ss:Type="String">Activate-Inventory</Data></Cell><Cell><Data ss:Type="String">Activation Team</Data></Cell><Cell><Data ss:Type="String">high</Data></Cell></Row>
+      <Row><Cell><Data ss:Type="String">ugm</Data></Cell><Cell><Data ss:Type="String">UGM</Data></Cell><Cell><Data ss:Type="String">Platform Team</Data></Cell><Cell><Data ss:Type="String">medium</Data></Cell></Row>
+      <Row><Cell><Data ss:Type="String">pingfed</Data></Cell><Cell><Data ss:Type="String">Pingfed</Data></Cell><Cell><Data ss:Type="String">Identity Team</Data></Cell><Cell><Data ss:Type="String">medium</Data></Cell></Row>
+      <Row><Cell><Data ss:Type="String">session-manager</Data></Cell><Cell><Data ss:Type="String">Session Manager</Data></Cell><Cell><Data ss:Type="String">Platform Team</Data></Cell><Cell><Data ss:Type="String">medium</Data></Cell></Row>
+      <Row><Cell><Data ss:Type="String">sso-manager</Data></Cell><Cell><Data ss:Type="String">SSO Manager</Data></Cell><Cell><Data ss:Type="String">Identity Team</Data></Cell><Cell><Data ss:Type="String">medium</Data></Cell></Row>
+      <Row><Cell><Data ss:Type="String">frontend</Data></Cell><Cell><Data ss:Type="String">Frontend</Data></Cell><Cell><Data ss:Type="String">UI Team</Data></Cell><Cell><Data ss:Type="String">high</Data></Cell></Row>
+      <Row><Cell><Data ss:Type="String">ui-doorway</Data></Cell><Cell><Data ss:Type="String">UI-Doorway</Data></Cell><Cell><Data ss:Type="String">UI Team</Data></Cell><Cell><Data ss:Type="String">high</Data></Cell></Row>
+      <Row><Cell><Data ss:Type="String">mfe</Data></Cell><Cell><Data ss:Type="String">MFE</Data></Cell><Cell><Data ss:Type="String">UI Team</Data></Cell><Cell><Data ss:Type="String">high</Data></Cell></Row>
+    </Table>
+  </Worksheet>
+
+  <Worksheet ss:Name="CurrentState">
+    <Table>
+      <Column ss:Width="120"/>
+      <Column ss:Width="240"/>
+      <Column ss:Width="120"/>
+      <Column ss:Width="140"/>
+      <Column ss:Width="160"/>
+      <Column ss:Width="140"/>
+      <Column ss:Width="140"/>
+      <Column ss:Width="360"/>
+
+      <Row>
+        <Cell ss:StyleID="sHeader"><Data ss:Type="String">cluster</Data></Cell>
+        <Cell ss:StyleID="sHeader"><Data ss:Type="String">service_name</Data></Cell>
+        <Cell ss:StyleID="sHeader"><Data ss:Type="String">current_version</Data></Cell>
+        <Cell ss:StyleID="sHeader"><Data ss:Type="String">last_deploy_status</Data></Cell>
+        <Cell ss:StyleID="sHeader"><Data ss:Type="String">last_deploy_time</Data></Cell>
+        <Cell ss:StyleID="sHeader"><Data ss:Type="String">functional_gate</Data></Cell>
+        <Cell ss:StyleID="sHeader"><Data ss:Type="String">nightly_status</Data></Cell>
+        <Cell ss:StyleID="sHeader"><Data ss:Type="String">notes</Data></Cell>
+      </Row>
+
+      <Row>
+        <Cell><Data ss:Type="String">Mira</Data></Cell>
+        <Cell><Data ss:Type="String">AuthN</Data></Cell>
+        <Cell><Data ss:Type="String">3.4.2</Data></Cell>
+        <Cell ss:StyleID="sOk"><Data ss:Type="String">SUCCESS</Data></Cell>
+        <Cell><Data ss:Type="String">2026-02-03 22:28 UTC</Data></Cell>
+        <Cell ss:StyleID="sOk"><Data ss:Type="String">PASS</Data></Cell>
+        <Cell ss:StyleID="sWarn"><Data ss:Type="String">REGRESSION: 2 failed</Data></Cell>
+        <Cell><Data ss:Type="String">Promote to Pavo after manual/scale/perf signoff</Data></Cell>
+      </Row>
+
+      <Row>
+        <Cell><Data ss:Type="String">Pavo</Data></Cell>
+        <Cell><Data ss:Type="String">AuthN</Data></Cell>
+        <Cell><Data ss:Type="String">3.4.1</Data></Cell>
+        <Cell ss:StyleID="sOk"><Data ss:Type="String">SUCCESS</Data></Cell>
+        <Cell><Data ss:Type="String">2026-02-03 23:20 UTC</Data></Cell>
+        <Cell ss:StyleID="sSubtle"><Data ss:Type="String">N/A</Data></Cell>
+        <Cell ss:StyleID="sOk"><Data ss:Type="String">SANITY: PASS</Data></Cell>
+        <Cell><Data ss:Type="String">Used by BU partners</Data></Cell>
+      </Row>
+
+      <Row>
+        <Cell><Data ss:Type="String">Aquila</Data></Cell>
+        <Cell><Data ss:Type="String">AuthN</Data></Cell>
+        <Cell><Data ss:Type="String">3.4.0</Data></Cell>
+        <Cell ss:StyleID="sOk"><Data ss:Type="String">LIVE</Data></Cell>
+        <Cell><Data ss:Type="String">2026-02-02 18:22 UTC</Data></Cell>
+        <Cell ss:StyleID="sSubtle"><Data ss:Type="String">N/A</Data></Cell>
+        <Cell ss:StyleID="sSubtle"><Data ss:Type="String">N/A</Data></Cell>
+        <Cell><Data ss:Type="String">Production rollout</Data></Cell>
+      </Row>
+
+    </Table>
+  </Worksheet>
+
+  <Worksheet ss:Name="DeployAttempts">
+    <Table>
+      <Column ss:Width="220"/>
+      <Column ss:Width="90"/>
+      <Column ss:Width="240"/>
+      <Column ss:Width="110"/>
+      <Column ss:Width="110"/>
+      <Column ss:Width="150"/>
+      <Column ss:Width="150"/>
+      <Column ss:Width="130"/>
+      <Column ss:Width="140"/>
+      <Column ss:Width="300"/>
+
+      <Row>
+        <Cell ss:StyleID="sHeader"><Data ss:Type="String">attempt_id</Data></Cell>
+        <Cell ss:StyleID="sHeader"><Data ss:Type="String">cluster</Data></Cell>
+        <Cell ss:StyleID="sHeader"><Data ss:Type="String">service_name</Data></Cell>
+        <Cell ss:StyleID="sHeader"><Data ss:Type="String">build_version</Data></Cell>
+        <Cell ss:StyleID="sHeader"><Data ss:Type="String">git_sha</Data></Cell>
+        <Cell ss:StyleID="sHeader"><Data ss:Type="String">deploy_start</Data></Cell>
+        <Cell ss:StyleID="sHeader"><Data ss:Type="String">deploy_end</Data></Cell>
+        <Cell ss:StyleID="sHeader"><Data ss:Type="String">deploy_status</Data></Cell>
+        <Cell ss:StyleID="sHeader"><Data ss:Type="String">rollback_to</Data></Cell>
+        <Cell ss:StyleID="sHeader"><Data ss:Type="String">deploy_job_url</Data></Cell>
+      </Row>
+
+      <Row>
+        <Cell><Data ss:Type="String">mira:authn:3.4.2:1284</Data></Cell>
+        <Cell><Data ss:Type="String">Mira</Data></Cell>
+        <Cell><Data ss:Type="String">AuthN</Data></Cell>
+        <Cell><Data ss:Type="String">3.4.2</Data></Cell>
+        <Cell><Data ss:Type="String">a1b2c3d</Data></Cell>
+        <Cell><Data ss:Type="String">2026-02-03 22:14 UTC</Data></Cell>
+        <Cell><Data ss:Type="String">2026-02-03 22:28 UTC</Data></Cell>
+        <Cell ss:StyleID="sOk"><Data ss:Type="String">SUCCESS</Data></Cell>
+        <Cell><Data ss:Type="String"></Data></Cell>
+        <Cell ss:StyleID="sLink"><Data ss:Type="String">https://ci.example/job/1284</Data></Cell>
+      </Row>
+
+      <Row>
+        <Cell><Data ss:Type="String">mira:authn:3.4.2:1283</Data></Cell>
+        <Cell><Data ss:Type="String">Mira</Data></Cell>
+        <Cell><Data ss:Type="String">AuthN</Data></Cell>
+        <Cell><Data ss:Type="String">3.4.2</Data></Cell>
+        <Cell><Data ss:Type="String">a1b2c3d</Data></Cell>
+        <Cell><Data ss:Type="String">2026-02-03 20:10 UTC</Data></Cell>
+        <Cell><Data ss:Type="String">2026-02-03 20:19 UTC</Data></Cell>
+        <Cell ss:StyleID="sWarn"><Data ss:Type="String">ROLLBACK</Data></Cell>
+        <Cell><Data ss:Type="String">3.4.1</Data></Cell>
+        <Cell ss:StyleID="sLink"><Data ss:Type="String">https://ci.example/job/1283</Data></Cell>
+      </Row>
+
+      <Row>
+        <Cell><Data ss:Type="String">pavo:authn:3.4.1:1279</Data></Cell>
+        <Cell><Data ss:Type="String">Pavo</Data></Cell>
+        <Cell><Data ss:Type="String">AuthN</Data></Cell>
+        <Cell><Data ss:Type="String">3.4.1</Data></Cell>
+        <Cell><Data ss:Type="String">98ff12a</Data></Cell>
+        <Cell><Data ss:Type="String">2026-02-03 23:10 UTC</Data></Cell>
+        <Cell><Data ss:Type="String">2026-02-03 23:20 UTC</Data></Cell>
+        <Cell ss:StyleID="sOk"><Data ss:Type="String">SUCCESS</Data></Cell>
+        <Cell><Data ss:Type="String"></Data></Cell>
+        <Cell ss:StyleID="sLink"><Data ss:Type="String">https://ci.example/job/1279</Data></Cell>
+      </Row>
+
+      <Row>
+        <Cell><Data ss:Type="String">aquila:authn:3.4.0:1275</Data></Cell>
+        <Cell><Data ss:Type="String">Aquila</Data></Cell>
+        <Cell><Data ss:Type="String">AuthN</Data></Cell>
+        <Cell><Data ss:Type="String">3.4.0</Data></Cell>
+        <Cell><Data ss:Type="String">77ac991</Data></Cell>
+        <Cell><Data ss:Type="String">2026-02-02 18:00 UTC</Data></Cell>
+        <Cell><Data ss:Type="String">2026-02-02 18:22 UTC</Data></Cell>
+        <Cell ss:StyleID="sOk"><Data ss:Type="String">LIVE</Data></Cell>
+        <Cell><Data ss:Type="String"></Data></Cell>
+        <Cell ss:StyleID="sLink"><Data ss:Type="String">https://ci.example/job/1275</Data></Cell>
+      </Row>
+
+    </Table>
+  </Worksheet>
+
+  <Worksheet ss:Name="TestRuns">
+    <Table>
+      <Column ss:Width="120"/>
+      <Column ss:Width="90"/>
+      <Column ss:Width="240"/>
+      <Column ss:Width="110"/>
+      <Column ss:Width="120"/>
+      <Column ss:Width="160"/>
+      <Column ss:Width="70"/>
+      <Column ss:Width="70"/>
+      <Column ss:Width="70"/>
+      <Column ss:Width="70"/>
+      <Column ss:Width="90"/>
+      <Column ss:Width="300"/>
+
+      <Row>
+        <Cell ss:StyleID="sHeader"><Data ss:Type="String">test_run_id</Data></Cell>
+        <Cell ss:StyleID="sHeader"><Data ss:Type="String">cluster</Data></Cell>
+        <Cell ss:StyleID="sHeader"><Data ss:Type="String">service_name</Data></Cell>
+        <Cell ss:StyleID="sHeader"><Data ss:Type="String">build_version</Data></Cell>
+        <Cell ss:StyleID="sHeader"><Data ss:Type="String">suite_type</Data></Cell>
+        <Cell ss:StyleID="sHeader"><Data ss:Type="String">executed_at</Data></Cell>
+        <Cell ss:StyleID="sHeader"><Data ss:Type="String">total</Data></Cell>
+        <Cell ss:StyleID="sHeader"><Data ss:Type="String">passed</Data></Cell>
+        <Cell ss:StyleID="sHeader"><Data ss:Type="String">failed</Data></Cell>
+        <Cell ss:StyleID="sHeader"><Data ss:Type="String">skipped</Data></Cell>
+        <Cell ss:StyleID="sHeader"><Data ss:Type="String">result</Data></Cell>
+        <Cell ss:StyleID="sHeader"><Data ss:Type="String">report_url</Data></Cell>
+      </Row>
+
+      <Row>
+        <Cell><Data ss:Type="String">tr-001</Data></Cell>
+        <Cell><Data ss:Type="String">Mira</Data></Cell>
+        <Cell><Data ss:Type="String">AuthN</Data></Cell>
+        <Cell><Data ss:Type="String">3.4.2</Data></Cell>
+        <Cell><Data ss:Type="String">FUNCTIONAL</Data></Cell>
+        <Cell><Data ss:Type="String">2026-02-03 22:20 UTC</Data></Cell>
+        <Cell><Data ss:Type="Number">420</Data></Cell>
+        <Cell><Data ss:Type="Number">420</Data></Cell>
+        <Cell><Data ss:Type="Number">0</Data></Cell>
+        <Cell><Data ss:Type="Number">0</Data></Cell>
+        <Cell ss:StyleID="sOk"><Data ss:Type="String">PASS</Data></Cell>
+        <Cell ss:StyleID="sLink"><Data ss:Type="String">https://reports.example/functional/1284</Data></Cell>
+      </Row>
+
+      <Row>
+        <Cell><Data ss:Type="String">tr-002</Data></Cell>
+        <Cell><Data ss:Type="String">Mira</Data></Cell>
+        <Cell><Data ss:Type="String">AuthN</Data></Cell>
+        <Cell><Data ss:Type="String">3.4.2</Data></Cell>
+        <Cell><Data ss:Type="String">REGRESSION</Data></Cell>
+        <Cell><Data ss:Type="String">2026-02-04 08:10 UTC</Data></Cell>
+        <Cell><Data ss:Type="Number">1200</Data></Cell>
+        <Cell><Data ss:Type="Number">1198</Data></Cell>
+        <Cell><Data ss:Type="Number">2</Data></Cell>
+        <Cell><Data ss:Type="Number">0</Data></Cell>
+        <Cell ss:StyleID="sWarn"><Data ss:Type="String">FAIL</Data></Cell>
+        <Cell ss:StyleID="sLink"><Data ss:Type="String">https://reports.example/regression/nightly-0204</Data></Cell>
+      </Row>
+
+      <Row>
+        <Cell><Data ss:Type="String">tr-003</Data></Cell>
+        <Cell><Data ss:Type="String">Pavo</Data></Cell>
+        <Cell><Data ss:Type="String">AuthN</Data></Cell>
+        <Cell><Data ss:Type="String">3.4.1</Data></Cell>
+        <Cell><Data ss:Type="String">SANITY</Data></Cell>
+        <Cell><Data ss:Type="String">2026-02-04 07:55 UTC</Data></Cell>
+        <Cell><Data ss:Type="Number">80</Data></Cell>
+        <Cell><Data ss:Type="Number">80</Data></Cell>
+        <Cell><Data ss:Type="Number">0</Data></Cell>
+        <Cell><Data ss:Type="Number">0</Data></Cell>
+        <Cell ss:StyleID="sOk"><Data ss:Type="String">PASS</Data></Cell>
+        <Cell ss:StyleID="sLink"><Data ss:Type="String">https://reports.example/sanity/nightly-0204</Data></Cell>
+      </Row>
+
+    </Table>
+  </Worksheet>
+
+  <Worksheet ss:Name="Scorecard">
+    <Table>
+      <Column ss:Width="240"/>
+      <Column ss:Width="90"/>
+      <Column ss:Width="90"/>
+      <Column ss:Width="120"/>
+      <Column ss:Width="90"/>
+      <Column ss:Width="120"/>
+      <Column ss:Width="420"/>
+
+      <Row>
+        <Cell ss:StyleID="sHeader"><Data ss:Type="String">service_name</Data></Cell>
+        <Cell ss:StyleID="sHeader"><Data ss:Type="String">overall</Data></Cell>
+        <Cell ss:StyleID="sHeader"><Data ss:Type="String">gameday</Data></Cell>
+        <Cell ss:StyleID="sHeader"><Data ss:Type="String">prod_outages</Data></Cell>
+        <Cell ss:StyleID="sHeader"><Data ss:Type="String">tests</Data></Cell>
+        <Cell ss:StyleID="sHeader"><Data ss:Type="String">incidents</Data></Cell>
+        <Cell ss:StyleID="sHeader"><Data ss:Type="String">notes</Data></Cell>
+      </Row>
+
+      <Row>
+        <Cell><Data ss:Type="String">AuthN</Data></Cell>
+        <Cell><Data ss:Type="Number">88</Data></Cell>
+        <Cell><Data ss:Type="Number">86</Data></Cell>
+        <Cell><Data ss:Type="Number">92</Data></Cell>
+        <Cell><Data ss:Type="Number">88</Data></Cell>
+        <Cell><Data ss:Type="Number">80</Data></Cell>
+        <Cell><Data ss:Type="String">Sample scorecard row; replace with real scoring and evidence links.</Data></Cell>
+      </Row>
+
+      <Row>
+        <Cell><Data ss:Type="String">AuthZ</Data></Cell>
+        <Cell><Data ss:Type="Number">85</Data></Cell>
+        <Cell><Data ss:Type="Number">84</Data></Cell>
+        <Cell><Data ss:Type="Number">88</Data></Cell>
+        <Cell><Data ss:Type="Number">85</Data></Cell>
+        <Cell><Data ss:Type="Number">78</Data></Cell>
+        <Cell><Data ss:Type="String">Sample scorecard row.</Data></Cell>
+      </Row>
+
+    </Table>
+  </Worksheet>
+
+  <Worksheet ss:Name="Rollups">
+    <Table>
+      <Column ss:Width="240"/>
+      <Column ss:Width="180"/>
+      <Column ss:Width="180"/>
+      <Column ss:Width="180"/>
+
+      <Row>
+        <Cell ss:StyleID="sHeader"><Data ss:Type="String">Metric</Data></Cell>
+        <Cell ss:StyleID="sHeader"><Data ss:Type="String">Mira</Data></Cell>
+        <Cell ss:StyleID="sHeader"><Data ss:Type="String">Pavo</Data></Cell>
+        <Cell ss:StyleID="sHeader"><Data ss:Type="String">Aquila</Data></Cell>
+      </Row>
+
+      <Row>
+        <Cell><Data ss:Type="String">Deploy attempts (count)</Data></Cell>
+        <Cell><Data ss:Type="String">(Use PivotTable on DeployAttempts)</Data></Cell>
+        <Cell><Data ss:Type="String">(Use PivotTable on DeployAttempts)</Data></Cell>
+        <Cell><Data ss:Type="String">(Use PivotTable on DeployAttempts)</Data></Cell>
+      </Row>
+      <Row>
+        <Cell><Data ss:Type="String">Success rate</Data></Cell>
+        <Cell><Data ss:Type="String">(SUCCESS / total)</Data></Cell>
+        <Cell><Data ss:Type="String">(SUCCESS / total)</Data></Cell>
+        <Cell><Data ss:Type="String">(LIVE / total)</Data></Cell>
+      </Row>
+      <Row>
+        <Cell><Data ss:Type="String">Rollbacks</Data></Cell>
+        <Cell><Data ss:Type="String">(Count ROLLBACK)</Data></Cell>
+        <Cell><Data ss:Type="String">(Usually 0)</Data></Cell>
+        <Cell><Data ss:Type="String">(If applicable)</Data></Cell>
+      </Row>
+
+      <Row>
+        <Cell><Data ss:Type="String">Note</Data></Cell>
+        <Cell ss:StyleID="sSubtle" ss:MergeAcross="2"><Data ss:Type="String">For the real report, build this sheet using PivotTables from DeployAttempts and TestRuns.</Data></Cell>
+      </Row>
+
+    </Table>
+  </Worksheet>
+
+</Workbook>
