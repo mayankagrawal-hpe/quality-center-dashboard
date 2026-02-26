@@ -61,7 +61,7 @@ export function layout({ title, subtitle, activeNav, content }) {
         <div class="flex items-center gap-2">
           <div class="h-8 w-8 rounded-lg bg-slate-100 text-slate-950 font-black flex items-center justify-center">D</div>
           <div>
-            <div class="text-sm font-semibold">Deployment & Quality</div>
+            <div class="text-sm font-semibold">Quality Center Dashboard</div>
             <div class="text-xs text-slate-400">UX prototype (mock data)</div>
           </div>
         </div>
@@ -69,9 +69,11 @@ export function layout({ title, subtitle, activeNav, content }) {
         <div class="flex-1"></div>
 
         <div class="hidden md:flex items-center gap-2 text-sm">
-          ${navLink('#/', 'Overview', activeNav === 'overview')}
-          ${navLink('#/analytics', 'Analytics', activeNav === 'analytics')}
-          ${navLink('#/scorecard', 'Score card', activeNav === 'scorecard')}
+          ${navLink('#/', 'Service Health', activeNav === 'overview')}
+          ${navLink('#/versions', 'Version Compare', activeNav === 'versions')}
+          ${navLink('#/analytics', '<s>Analytics</s>', activeNav === 'analytics')}
+          ${navLink('#/scorecard', '<s>Score card</s>', activeNav === 'scorecard')}
+          ${navLink('#/architecture', 'Design', activeNav === 'architecture')}
         </div>
 
         <div class="w-px h-6 bg-slate-800 hidden md:block"></div>

@@ -1,11 +1,13 @@
 import { addRoute, startRouter } from './router.js';
-import { renderOverview } from './pages/overview.js';
+import { renderOverview, bindOverviewInteractions } from './pages/overview.js';
 import { renderCluster, bindClusterInteractions } from './pages/cluster.js';
 import { renderService } from './pages/service.js';
 import { renderBuild } from './pages/build.js';
 import { renderReliability } from './pages/reliability.js';
 import { renderScorecard } from './pages/scorecard.js';
 import { renderAnalytics, bindAnalyticsCharts } from './pages/analytics.js';
+import { renderArchitecture } from './pages/architecture.js';
+import { renderVersions, bindVersionsInteractions } from './pages/versions.js';
 
 function mount(html) {
   const root = document.getElementById('app');
@@ -39,11 +41,11 @@ function bindGlobalSearch() {
   });
 }
 
-addRoute(/^#\/$/, () => mount(renderOverview()));
-addRoute(/^#\/$/, () => mount(renderOverview()));
-addRoute(/^#\/?$/, () => mount(renderOverview()));
+addRoute(/^#\/$/, () => { mount(renderOverview()); bindOverviewInteractions(); });
+addRoute(/^#\/$/, () => { mount(renderOverview()); bindOverviewInteractions(); });
+addRoute(/^#\/?$/, () => { mount(renderOverview()); bindOverviewInteractions(); });
 
-addRoute(/^#\/clusters\/([^/]+)\/?$/, ({ match }) => {
+addRoute(/^#\/clusters\/([^/?]+)\/?(\?.*)?$/, ({ match }) => {
   const clusterId = decodeURIComponent(match[1]);
   mount(renderCluster({ clusterId }));
   bindClusterInteractions({ clusterId });
@@ -67,5 +69,12 @@ addRoute(/^#\/analytics\/?$/, () => {
 addRoute(/^#\/reliability\/?$/, () => mount(renderReliability()));
 
 addRoute(/^#\/scorecard\/?$/, () => mount(renderScorecard()));
+
+addRoute(/^#\/versions\/?$/, () => {
+  mount(renderVersions());
+  bindVersionsInteractions();
+});
+
+addRoute(/^#\/architecture\/?$/, () => mount(renderArchitecture()));
 
 startRouter();

@@ -167,7 +167,7 @@ function clusterSnapshotCard(clusterId, serviceId) {
         <div class="flex items-center gap-2">
           <div class="text-lg font-semibold">${cluster?.name || clusterId}</div>
           ${badge({ label: cluster?.type || '—', tone: 'slate', subtle: true })}
-          ${badge({ label: cluster?.role || '—', tone: cluster?.role === 'Primary' ? 'emerald' : cluster?.role === 'Secondary' ? 'amber' : 'slate', subtle: true })}
+          ${badge({ label: cluster?.role || '—', tone: cluster?.role === 'Active' ? 'emerald' : cluster?.role === 'Hot-standby' ? 'amber' : 'slate', subtle: true })}
           <div class="flex-1"></div>
           ${latest ? badge({ label: meta.label, tone: meta.tone, subtle: true }) : badge({ label: 'No attempts', tone: 'slate', subtle: true })}
         </div>

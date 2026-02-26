@@ -4,14 +4,14 @@ export const clusters = [
     name: 'Mira',
     type: 'QA',
     description:
-      'Deploy after PR merge. Functional tests gate success. Rollback on failures. Nightly regression runs.',
+      'Deploy after PR is merged. Functional tests gate success. Functional/Scale/Perf/Manual testing cluster. Also runs Nightly Regression.',
   },
   {
     id: 'pavo',
     name: 'Pavo',
     type: 'Stage',
     description:
-      'Promoted after Mira validation (functional/scale/perf/manual). Used by BU partners. Nightly sanity runs.',
+      'Promote after Mira validation. Used by BU partners and also runs Nightly Regression.',
   },
   {
     id: 'aquila',
@@ -54,20 +54,20 @@ export const clusterRegions = [
   },
 ];
 
-// Primary/Secondary (hot standby) roles per base cluster.
+// Active/Hot-standby roles per base cluster.
 // In production, you can source this from the separate S3 file you mentioned.
 export const clusterRegionRoles = {
   mira: {
-    primary: 'us-west-2',
-    secondary: 'us-east-2',
+    active: 'us-west-2',
+    hotStandby: 'us-east-2',
   },
   pavo: {
-    primary: 'us-west-2',
-    secondary: 'us-east-2',
+    active: 'us-west-2',
+    hotStandby: 'us-east-2',
   },
   aquila: {
-    primary: 'us-west-2',
-    secondary: 'us-east-2',
+    active: 'us-west-2',
+    hotStandby: 'us-east-2',
   },
 };
 
@@ -82,10 +82,10 @@ export function getClusterRegion(clusterRegionId) {
 
   const roles = clusterRegionRoles[cr.baseId];
   const role = roles
-    ? roles.primary === cr.region
-      ? 'Primary'
-      : roles.secondary === cr.region
-        ? 'Secondary'
+    ? roles.active === cr.region
+      ? 'Active'
+      : roles.hotStandby === cr.region
+        ? 'Hot-standby'
         : '—'
     : '—';
 
@@ -136,6 +136,9 @@ export const services = [
   { id: 'frontend', name: 'Frontend', owner: 'UI Team', tier: 'high', appId: '00000000-0000-0000-0000-000000000009' },
   { id: 'ui-doorway', name: 'UI-Doorway', owner: 'UI Team', tier: 'high', appId: '00000000-0000-0000-0000-000000000010' },
   { id: 'mfe', name: 'MFE', owner: 'UI Team', tier: 'high', appId: '00000000-0000-0000-0000-000000000011' },
+  { id: 'notification-service', name: 'Notification Service', owner: 'Platform Team', tier: 'medium', appId: '00000000-0000-0000-0000-000000000012' },
+  { id: 'audit-service', name: 'Audit Service', owner: 'Security Team', tier: 'high', appId: '00000000-0000-0000-0000-000000000013' },
+  { id: 'config-service', name: 'Config Service', owner: 'Platform Team', tier: 'medium', appId: '00000000-0000-0000-0000-000000000014' },
 ];
 
 // Placeholder mapping (in production, resolve appId -> appName via your API)
@@ -157,6 +160,9 @@ export const currentRunning = {
     frontend: '0.42.0',
     'ui-doorway': '0.18.2',
     mfe: '0.27.5',
+    'notification-service': '1.3.0',
+    'audit-service': '2.0.4',
+    'config-service': '0.9.1',
   },
   'mira-us-east-2': {
     authn: '3.4.1',
@@ -171,6 +177,9 @@ export const currentRunning = {
     frontend: '0.41.3',
     'ui-doorway': '0.18.1',
     mfe: '0.27.3',
+    'notification-service': '1.2.9',
+    'audit-service': '2.0.3',
+    'config-service': '0.9.0',
   },
   'pavo-us-west-2': {
     authn: '3.4.1',
@@ -211,8 +220,6 @@ export const currentRunning = {
     'session-manager': '1.9.2',
     'sso-manager': '2.3.0',
     frontend: '0.40.0',
-    'ui-doorway': '0.17.4',
-    mfe: '0.26.9',
   },
   'aquila-us-east-2': {
     authn: '3.4.0',
@@ -225,8 +232,6 @@ export const currentRunning = {
     'session-manager': '1.9.2',
     'sso-manager': '2.3.0',
     frontend: '0.40.0',
-    'ui-doorway': '0.17.4',
-    mfe: '0.26.9',
   },
 };
 
@@ -856,18 +861,6 @@ const seedDeploymentAttempts = [
     trigger: 'promotion',
   },
   {
-    id: 'aquila-us-east-2:ui-doorway:0.17.4:920',
-    clusterId: 'aquila-us-east-2',
-    serviceId: 'ui-doorway',
-    buildVersion: '0.17.4',
-    gitSha: 'dd00aa0',
-    startedAt: '2026-02-02T04:00:00Z',
-    endedAt: '2026-02-02T04:14:00Z',
-    status: 'LIVE',
-    trigger: 'promotion',
-  },
-
-  {
     id: 'mira-us-west-2:mfe:0.27.6:1101',
     clusterId: 'mira-us-west-2',
     serviceId: 'mfe',
@@ -912,16 +905,48 @@ const seedDeploymentAttempts = [
     status: 'SUCCESS',
     trigger: 'promotion',
   },
+
+  // mira-us-west-2: 2 rollbacks + 1 failure (latest builds for these services)
   {
-    id: 'aquila-us-west-2:mfe:0.26.9:1020',
-    clusterId: 'aquila-us-west-2',
-    serviceId: 'mfe',
-    buildVersion: '0.26.9',
-    gitSha: 'ee11aa0',
-    startedAt: '2026-02-01T04:00:00Z',
-    endedAt: '2026-02-01T04:15:00Z',
-    status: 'LIVE',
-    trigger: 'promotion',
+    id: 'mira-us-west-2:notification-service:1.3.1:5001',
+    clusterId: 'mira-us-west-2',
+    serviceId: 'notification-service',
+    buildVersion: '1.3.1',
+    gitSha: 'noti501',
+    startedAt: '2026-02-05T16:00:00Z',
+    endedAt: '2026-02-05T16:14:00Z',
+    status: 'ROLLBACK',
+    rollbackToBuild: '1.3.0',
+    failureReason: 'Functional gate failures — notification delivery timeout',
+    trigger: 'merge',
+    _pinned: true,
+  },
+  {
+    id: 'mira-us-west-2:config-service:0.9.2:5002',
+    clusterId: 'mira-us-west-2',
+    serviceId: 'config-service',
+    buildVersion: '0.9.2',
+    gitSha: 'cfg5002',
+    startedAt: '2026-02-05T15:30:00Z',
+    endedAt: '2026-02-05T15:42:00Z',
+    status: 'ROLLBACK',
+    rollbackToBuild: '0.9.1',
+    failureReason: 'Config propagation regression detected',
+    trigger: 'merge',
+    _pinned: true,
+  },
+  {
+    id: 'mira-us-west-2:audit-service:2.0.5:5003',
+    clusterId: 'mira-us-west-2',
+    serviceId: 'audit-service',
+    buildVersion: '2.0.5',
+    gitSha: 'aud5003',
+    startedAt: '2026-02-05T14:45:00Z',
+    endedAt: '2026-02-05T14:58:00Z',
+    status: 'FAILED',
+    failureReason: 'Health checks did not stabilize within timeout',
+    trigger: 'merge',
+    _pinned: true,
   },
 ];
 
@@ -989,7 +1014,8 @@ function buildDeploymentAttempts(seed) {
       if (existing.length >= 5) continue;
 
       const current = currentRunning[clusterId]?.[svc.id];
-      const currentVer = current || '0.0.0';
+      if (!current) continue;
+      const currentVer = current;
       const needed = 5 - existing.length;
 
       for (let i = 0; i < needed; i++) {
@@ -1066,6 +1092,7 @@ function buildDeploymentAttempts(seed) {
 
   for (const [key, idx] of latestIndexByKey.entries()) {
     const a = attempts[idx];
+    if (a._pinned) continue;
     const desired = String(a.clusterId).startsWith('aquila-') ? 'LIVE' : 'SUCCESS';
     if (a.status === desired) continue;
     attempts[idx] = {
@@ -1096,31 +1123,6 @@ const seedTestRuns = [
     executedAt: '2026-02-03T22:20:00Z',
     reportUrl: '#',
   },
-  {
-    id: 'tr:2',
-    attemptId: 'mira-us-west-2:authn:3.4.2:1284',
-    suiteType: 'REGRESSION',
-    total: 1200,
-    passed: 1198,
-    failed: 2,
-    skipped: 0,
-    durationSec: 3600,
-    executedAt: '2026-02-04T08:10:00Z',
-    reportUrl: '#',
-  },
-  {
-    id: 'tr:3',
-    attemptId: 'mira-us-west-2:authn:3.4.2:1284',
-    suiteType: 'SCALE',
-    total: 25,
-    passed: 25,
-    failed: 0,
-    skipped: 0,
-    durationSec: 2100,
-    executedAt: '2026-02-04T02:30:00Z',
-    reportUrl: '#',
-  },
-
   // AuthN Mira rollback attempt
   {
     id: 'tr:4',
@@ -1154,7 +1156,7 @@ const seedTestRuns = [
     id: 'tr:6',
     attemptId: 'mira-us-east-2:account-management:1.18.0:9101',
     suiteType: 'FUNCTIONAL',
-    total: 420,
+    total: 312,
     passed: 120,
     failed: 0,
     skipped: 0,
@@ -1168,8 +1170,8 @@ const seedTestRuns = [
     id: 'tr:7',
     attemptId: 'mira-us-east-2:ugm:2.1.3:331',
     suiteType: 'FUNCTIONAL',
-    total: 300,
-    passed: 260,
+    total: 198,
+    passed: 158,
     failed: 40,
     skipped: 0,
     durationSec: 520,
@@ -1202,7 +1204,67 @@ const seedTestRuns = [
     executedAt: '2026-02-05T08:30:00Z',
     reportUrl: '#',
   },
+
+  // Notification Service rollback — FT had 18 failures
+  {
+    id: 'tr:10',
+    attemptId: 'mira-us-west-2:notification-service:1.3.1:5001',
+    suiteType: 'FUNCTIONAL',
+    total: 148,
+    passed: 130,
+    failed: 18,
+    skipped: 0,
+    durationSec: 580,
+    executedAt: '2026-02-05T16:08:00Z',
+    reportUrl: '#',
+  },
+
+  // Config Service rollback — FT had 12 failures
+  {
+    id: 'tr:11',
+    attemptId: 'mira-us-west-2:config-service:0.9.2:5002',
+    suiteType: 'FUNCTIONAL',
+    total: 132,
+    passed: 120,
+    failed: 12,
+    skipped: 0,
+    durationSec: 560,
+    executedAt: '2026-02-05T15:36:00Z',
+    reportUrl: '#',
+  },
+
+  // Audit Service failed — FT had 35 failures + rollback also failed
+  {
+    id: 'tr:12',
+    attemptId: 'mira-us-west-2:audit-service:2.0.5:5003',
+    suiteType: 'FUNCTIONAL',
+    total: 210,
+    passed: 175,
+    failed: 35,
+    skipped: 0,
+    durationSec: 490,
+    executedAt: '2026-02-05T14:52:00Z',
+    reportUrl: '#',
+  },
 ];
+
+const ftCountByService = {
+  authn: 420,
+  authz: 385,
+  'account-management': 312,
+  'activate-device-direct': 278,
+  'activate-inventory': 245,
+  ugm: 198,
+  pingfed: 156,
+  'session-manager': 230,
+  'sso-manager': 175,
+  frontend: 340,
+  'ui-doorway': 265,
+  mfe: 290,
+  'notification-service': 148,
+  'audit-service': 210,
+  'config-service': 132,
+};
 
 function buildTestRuns(seed, attempts) {
   const runs = [...seed];
@@ -1213,7 +1275,7 @@ function buildTestRuns(seed, attempts) {
     const isPavo = String(a.clusterId).startsWith('pavo-');
     const isAquila = String(a.clusterId).startsWith('aquila-');
 
-    const totalFunctional = 420;
+    const totalFunctional = ftCountByService[a.serviceId] || 200;
     const functionalFailed = 0;
     const functionalPassed = totalFunctional;
 
@@ -1244,7 +1306,7 @@ function buildTestRuns(seed, attempts) {
       durationSec: 600,
     });
 
-    // Add sanity/regression where it makes sense for the pipeline.
+    // Add sanity where it makes sense for the pipeline.
     if (isPavo || isAquila) {
       const totalSanity = 120;
       const sanityFailed = 0;
@@ -1256,24 +1318,168 @@ function buildTestRuns(seed, attempts) {
         durationSec: 540,
       });
     }
+  }
 
-    if (isMira) {
-      const totalRegression = 650;
-      const regressionFailed = 0;
-      maybeAdd('REGRESSION', {
-        total: totalRegression,
-        passed: Math.max(0, totalRegression - regressionFailed),
-        failed: regressionFailed,
-        skipped: 0,
-        durationSec: 1800,
-      });
+  // ── Nightly regression runs for Mira & Pavo ──
+  // Nightly runs all services' FT on whatever build is currently running.
+  // Not every build gets a nightly — only the one that happened to be "current"
+  // when the nightly kicked off. Use a deterministic hash on the attempt ID
+  // to scatter nightly runs across builds realistically (~60% chance).
+  function simpleHash(str) {
+    let h = 0;
+    for (let i = 0; i < str.length; i++) {
+      h = ((h << 5) - h + str.charCodeAt(i)) | 0;
     }
+    return Math.abs(h);
+  }
+
+  const nightlyFailServices = new Set(['ugm', 'frontend', 'session-manager']);
+
+  const nightlyEligible = attempts
+    .filter((a) => String(a.clusterId).startsWith('mira-') || String(a.clusterId).startsWith('pavo-'));
+
+  for (const a of nightlyEligible) {
+    const key = `${a.id}::REGRESSION`;
+    if (existingKey.has(key)) continue;
+
+    // ~60% of builds get a nightly run (deterministic based on attempt ID)
+    const hash = simpleHash(a.id);
+    if (hash % 10 >= 6) continue;
+
+    const total = ftCountByService[a.serviceId] || 200;
+    const hasFail = nightlyFailServices.has(a.serviceId) && hash % 7 === 0;
+    const failed = hasFail ? Math.max(2, Math.floor(total * 0.02)) : 0;
+
+    // Nightly runs at 2 AM the day after the build was deployed
+    const deployMs = Date.parse(a.startedAt);
+    const nightlyTime = Number.isFinite(deployMs)
+      ? new Date(deployMs + 8 * 60 * 60 * 1000).toISOString()
+      : a.startedAt;
+
+    runs.push({
+      id: `tr:nightly:${a.id}`,
+      attemptId: a.id,
+      suiteType: 'REGRESSION',
+      total,
+      passed: total - failed,
+      failed,
+      skipped: 0,
+      durationSec: 2400,
+      executedAt: nightlyTime,
+      reportUrl: '#',
+    });
+    existingKey.add(key);
+  }
+
+  // ── Canary test runs for Aquila clusters (per service) ──
+  // Canary runs a small focused test suite on each service after promotion to production.
+  // Every build on Aquila gets a canary run (~100% coverage).
+  const canaryEligible = attempts
+    .filter((a) => String(a.clusterId).startsWith('aquila-'));
+
+  const canaryCountByService = {
+    authn: 45, authz: 38, 'account-management': 32, 'activate-device-direct': 28,
+    'activate-inventory': 25, ugm: 22, pingfed: 18, 'session-manager': 20,
+    'sso-manager': 24, frontend: 30, 'ui-doorway': 15, mfe: 18,
+    'notification-service': 12, 'audit-service': 14, 'config-service': 10,
+  };
+
+  const canaryFailServices = new Set(['frontend', 'sso-manager']);
+
+  for (const a of canaryEligible) {
+    const key = `${a.id}::CANARY`;
+    if (existingKey.has(key)) continue;
+
+    const total = canaryCountByService[a.serviceId] || 20;
+    const hash = simpleHash(a.id);
+    const hasFail = canaryFailServices.has(a.serviceId) && hash % 8 === 0;
+    const failed = hasFail ? Math.max(1, Math.floor(total * 0.04)) : 0;
+
+    const deployMs = Date.parse(a.startedAt);
+    const canaryTime = Number.isFinite(deployMs)
+      ? new Date(deployMs + 30 * 60 * 1000).toISOString()
+      : a.startedAt;
+
+    runs.push({
+      id: `tr:canary:${a.id}`,
+      attemptId: a.id,
+      suiteType: 'CANARY',
+      total,
+      passed: total - failed,
+      failed,
+      skipped: 0,
+      durationSec: 300 + (hash % 120),
+      executedAt: canaryTime,
+      reportUrl: '#',
+    });
+    existingKey.add(key);
   }
 
   return runs;
 }
 
 export const testRuns = buildTestRuns(seedTestRuns, deploymentAttempts);
+
+/* ── Cluster-level test suites: Solution & System ─────────────── */
+// These run at the cluster level (not per-service). Only for Mira & Pavo.
+function buildClusterTestRuns() {
+  const runs = [];
+  const baseDate = new Date('2026-02-05T03:00:00Z');
+  const clusters = ['mira-us-west-2', 'mira-us-east-2', 'pavo-us-west-2', 'pavo-us-east-2'];
+
+  const solutionCounts = { 'mira-us-west-2': 185, 'mira-us-east-2': 185, 'pavo-us-west-2': 160, 'pavo-us-east-2': 160 };
+  const systemCounts   = { 'mira-us-west-2': 92,  'mira-us-east-2': 92,  'pavo-us-west-2': 78,  'pavo-us-east-2': 78 };
+
+  //                        day-0   day-1   day-2   day-3   day-4
+  const solFailPcts =      [0.5,    0.0,    2.8,    1.1,    0.0];
+  const solSkipPcts =      [0.0,    0.5,    0.5,    0.0,    1.0];
+  const sysFailPcts =      [1.1,    3.2,    0.0,    0.0,    1.6];
+  const sysSkipPcts =      [0.0,    0.0,    1.3,    0.0,    0.5];
+
+  for (const cid of clusters) {
+    for (let i = 0; i < 5; i++) {
+      const date = new Date(baseDate.getTime() - i * 86400000);
+      const dateStr = date.toISOString();
+
+      // Solution tests
+      const solTotal = solutionCounts[cid] + (i % 3) - 1;
+      const solFailed = Math.round(solTotal * solFailPcts[i] / 100);
+      const solSkipped = Math.round(solTotal * solSkipPcts[i] / 100);
+      runs.push({
+        id: `ct:sol:${cid}:${i}`,
+        clusterId: cid,
+        suiteType: 'SOLUTION',
+        total: solTotal,
+        passed: solTotal - solFailed - solSkipped,
+        failed: solFailed,
+        skipped: solSkipped,
+        durationSec: 1800 + i * 120,
+        executedAt: dateStr,
+        reportUrl: '#',
+      });
+
+      // System tests
+      const sysTotal = systemCounts[cid] + (i % 2);
+      const sysFailed = Math.round(sysTotal * sysFailPcts[i] / 100);
+      const sysSkipped = Math.round(sysTotal * sysSkipPcts[i] / 100);
+      runs.push({
+        id: `ct:sys:${cid}:${i}`,
+        clusterId: cid,
+        suiteType: 'SYSTEM',
+        total: sysTotal,
+        passed: sysTotal - sysFailed - sysSkipped,
+        failed: sysFailed,
+        skipped: sysSkipped,
+        durationSec: 2700 + i * 90,
+        executedAt: dateStr,
+        reportUrl: '#',
+      });
+    }
+  }
+  return runs;
+}
+
+export const clusterTestRuns = buildClusterTestRuns();
 
 export const promotions = [
   {
@@ -1293,6 +1499,108 @@ export const promotions = [
     promotedAt: '2026-02-02T17:40:00Z',
   },
 ];
+
+/* ── Mock Jira tickets per service, keyed by version ────────── */
+export const jiraTickets = {
+  authn: [
+    { key: 'AUTHN-1042', summary: 'Fix token refresh race condition', type: 'Bug', priority: 'Critical', version: '3.4.2', status: 'Done' },
+    { key: 'AUTHN-1038', summary: 'Add MFA enrollment audit logging', type: 'Story', priority: 'High', version: '3.4.2', status: 'Done' },
+    { key: 'AUTHN-1035', summary: 'Upgrade OIDC library to 4.x', type: 'Task', priority: 'Medium', version: '3.4.2', status: 'Done' },
+    { key: 'AUTHN-1030', summary: 'Session expiry not honoring grace period', type: 'Bug', priority: 'High', version: '3.4.1', status: 'Done' },
+    { key: 'AUTHN-1027', summary: 'Support SAML IdP-initiated SSO', type: 'Story', priority: 'High', version: '3.4.1', status: 'Done' },
+    { key: 'AUTHN-1024', summary: 'Rate limit login attempts per IP', type: 'Story', priority: 'Medium', version: '3.4.1', status: 'Done' },
+    { key: 'AUTHN-1020', summary: 'Password policy minimum length increase', type: 'Task', priority: 'Low', version: '3.4.0', status: 'Done' },
+    { key: 'AUTHN-1018', summary: 'Fix CORS header for /userinfo endpoint', type: 'Bug', priority: 'High', version: '3.4.0', status: 'Done' },
+    { key: 'AUTHN-1015', summary: 'Add account lockout notification email', type: 'Story', priority: 'Medium', version: '3.4.0', status: 'Done' },
+  ],
+  authz: [
+    { key: 'AUTHZ-892', summary: 'Policy evaluation timeout on large rule sets', type: 'Bug', priority: 'Critical', version: '2.9.1', status: 'Done' },
+    { key: 'AUTHZ-888', summary: 'Add deny-override combining algorithm', type: 'Story', priority: 'High', version: '2.9.1', status: 'Done' },
+    { key: 'AUTHZ-885', summary: 'Cache policy decisions for 30s', type: 'Task', priority: 'Medium', version: '2.9.0', status: 'Done' },
+    { key: 'AUTHZ-880', summary: 'Fix role hierarchy resolution for nested groups', type: 'Bug', priority: 'High', version: '2.9.0', status: 'Done' },
+    { key: 'AUTHZ-876', summary: 'Attribute-based access control MVP', type: 'Story', priority: 'High', version: '2.8.9', status: 'Done' },
+    { key: 'AUTHZ-872', summary: 'Audit log for permission changes', type: 'Story', priority: 'Medium', version: '2.8.9', status: 'Done' },
+  ],
+  'account-management': [
+    { key: 'ACCT-540', summary: 'Bulk account import CSV validation fix', type: 'Bug', priority: 'High', version: '1.18.0', status: 'Done' },
+    { key: 'ACCT-537', summary: 'Add account suspension workflow', type: 'Story', priority: 'High', version: '1.18.0', status: 'Done' },
+    { key: 'ACCT-533', summary: 'Org hierarchy depth limit to 10 levels', type: 'Task', priority: 'Medium', version: '1.17.9', status: 'Done' },
+    { key: 'ACCT-530', summary: 'Fix duplicate email validation on update', type: 'Bug', priority: 'Medium', version: '1.17.9', status: 'Done' },
+    { key: 'ACCT-526', summary: 'Self-service account deletion', type: 'Story', priority: 'High', version: '1.17.7', status: 'Done' },
+  ],
+  'activate-device-direct': [
+    { key: 'ADD-310', summary: 'Device activation timeout increased to 120s', type: 'Task', priority: 'Medium', version: '5.2.0', status: 'Done' },
+    { key: 'ADD-307', summary: 'Support batch device onboarding', type: 'Story', priority: 'High', version: '5.2.0', status: 'Done' },
+    { key: 'ADD-304', summary: 'Fix serial number collision handling', type: 'Bug', priority: 'Critical', version: '5.1.8', status: 'Done' },
+    { key: 'ADD-300', summary: 'Add device health check endpoint', type: 'Story', priority: 'Medium', version: '5.1.8', status: 'Done' },
+    { key: 'ADD-296', summary: 'Certificate rotation for device auth', type: 'Task', priority: 'High', version: '5.1.2', status: 'Done' },
+  ],
+  'activate-inventory': [
+    { key: 'INV-220', summary: 'Inventory sync job memory leak fix', type: 'Bug', priority: 'Critical', version: '4.6.1', status: 'Done' },
+    { key: 'INV-217', summary: 'Add inventory export to CSV', type: 'Story', priority: 'Medium', version: '4.6.1', status: 'Done' },
+    { key: 'INV-214', summary: 'Pagination fix for large inventory lists', type: 'Bug', priority: 'High', version: '4.6.0', status: 'Done' },
+    { key: 'INV-210', summary: 'Inventory reconciliation cron job', type: 'Story', priority: 'High', version: '4.6.0', status: 'Done' },
+    { key: 'INV-206', summary: 'Add inventory tagging support', type: 'Story', priority: 'Medium', version: '4.5.6', status: 'Done' },
+  ],
+  ugm: [
+    { key: 'UGM-180', summary: 'Group membership cache invalidation fix', type: 'Bug', priority: 'High', version: '2.1.3', status: 'Done' },
+    { key: 'UGM-177', summary: 'Nested group resolution performance', type: 'Task', priority: 'Medium', version: '2.1.3', status: 'Done' },
+    { key: 'UGM-174', summary: 'Add bulk user import via SCIM', type: 'Story', priority: 'High', version: '2.1.2', status: 'Done' },
+    { key: 'UGM-170', summary: 'Fix user search by display name', type: 'Bug', priority: 'Medium', version: '2.1.2', status: 'Done' },
+    { key: 'UGM-166', summary: 'Dynamic group rules engine', type: 'Story', priority: 'High', version: '2.1.0', status: 'Done' },
+  ],
+  pingfed: [
+    { key: 'PF-450', summary: 'Upgrade PingFederate runtime to 12.0.8', type: 'Task', priority: 'High', version: '12.0.8', status: 'Done' },
+    { key: 'PF-447', summary: 'Fix SAML assertion signing algorithm', type: 'Bug', priority: 'Critical', version: '12.0.8', status: 'Done' },
+    { key: 'PF-443', summary: 'Add OAuth2 DPoP support', type: 'Story', priority: 'Medium', version: '12.0.7', status: 'Done' },
+  ],
+  'session-manager': [
+    { key: 'SM-330', summary: 'Redis session store connection pooling', type: 'Task', priority: 'High', version: '1.9.7', status: 'Done' },
+    { key: 'SM-327', summary: 'Fix session hijack detection false positives', type: 'Bug', priority: 'Critical', version: '1.9.7', status: 'Done' },
+    { key: 'SM-324', summary: 'Sliding window session expiry', type: 'Story', priority: 'Medium', version: '1.9.6', status: 'Done' },
+    { key: 'SM-320', summary: 'Add session activity log', type: 'Story', priority: 'Low', version: '1.9.2', status: 'Done' },
+  ],
+  'sso-manager': [
+    { key: 'SSO-270', summary: 'Fix cross-domain cookie SameSite issue', type: 'Bug', priority: 'Critical', version: '2.3.4', status: 'Done' },
+    { key: 'SSO-267', summary: 'SP-initiated logout flow', type: 'Story', priority: 'High', version: '2.3.4', status: 'Done' },
+    { key: 'SSO-264', summary: 'Add SSO connection test endpoint', type: 'Story', priority: 'Medium', version: '2.3.3', status: 'Done' },
+    { key: 'SSO-260', summary: 'OIDC back-channel logout support', type: 'Story', priority: 'High', version: '2.3.0', status: 'Done' },
+  ],
+  frontend: [
+    { key: 'FE-890', summary: 'Fix dashboard rendering on Safari 17', type: 'Bug', priority: 'High', version: '0.42.0', status: 'Done' },
+    { key: 'FE-887', summary: 'Dark mode color contrast accessibility', type: 'Story', priority: 'Medium', version: '0.42.0', status: 'Done' },
+    { key: 'FE-884', summary: 'Add keyboard navigation to data tables', type: 'Story', priority: 'Medium', version: '0.41.3', status: 'Done' },
+    { key: 'FE-880', summary: 'Bundle size optimization -15%', type: 'Task', priority: 'High', version: '0.41.3', status: 'Done' },
+    { key: 'FE-876', summary: 'Fix date picker timezone issue', type: 'Bug', priority: 'High', version: '0.40.0', status: 'Done' },
+  ],
+  'ui-doorway': [
+    { key: 'UID-190', summary: 'Portal landing page redesign', type: 'Story', priority: 'High', version: '0.18.2', status: 'Done' },
+    { key: 'UID-187', summary: 'Fix redirect loop on expired sessions', type: 'Bug', priority: 'Critical', version: '0.18.2', status: 'Done' },
+    { key: 'UID-184', summary: 'Add multi-tenant branding support', type: 'Story', priority: 'Medium', version: '0.18.1', status: 'Done' },
+    { key: 'UID-180', summary: 'Lazy load portal micro-frontends', type: 'Task', priority: 'High', version: '0.17.4', status: 'Done' },
+  ],
+  mfe: [
+    { key: 'MFE-150', summary: 'Module federation shared scope fix', type: 'Bug', priority: 'High', version: '0.27.5', status: 'Done' },
+    { key: 'MFE-147', summary: 'Add health check for remote modules', type: 'Story', priority: 'Medium', version: '0.27.5', status: 'Done' },
+    { key: 'MFE-144', summary: 'Upgrade Webpack to 5.90', type: 'Task', priority: 'Medium', version: '0.27.3', status: 'Done' },
+    { key: 'MFE-140', summary: 'Fix CSS isolation between micro-frontends', type: 'Bug', priority: 'High', version: '0.26.9', status: 'Done' },
+  ],
+  'notification-service': [
+    { key: 'NS-110', summary: 'Email template rendering fix for Outlook', type: 'Bug', priority: 'High', version: '1.3.0', status: 'Done' },
+    { key: 'NS-107', summary: 'Add webhook delivery retry with backoff', type: 'Story', priority: 'High', version: '1.3.0', status: 'Done' },
+    { key: 'NS-104', summary: 'SMS notification support', type: 'Story', priority: 'Medium', version: '1.2.9', status: 'Done' },
+  ],
+  'audit-service': [
+    { key: 'AUD-88', summary: 'Fix audit log search by date range', type: 'Bug', priority: 'High', version: '2.0.4', status: 'Done' },
+    { key: 'AUD-85', summary: 'Add audit event streaming to SIEM', type: 'Story', priority: 'High', version: '2.0.4', status: 'Done' },
+    { key: 'AUD-82', summary: 'Retention policy auto-purge', type: 'Task', priority: 'Medium', version: '2.0.3', status: 'Done' },
+  ],
+  'config-service': [
+    { key: 'CFG-66', summary: 'Fix config reload race condition', type: 'Bug', priority: 'Critical', version: '0.9.1', status: 'Done' },
+    { key: 'CFG-63', summary: 'Add config diff between versions', type: 'Story', priority: 'Medium', version: '0.9.1', status: 'Done' },
+    { key: 'CFG-60', summary: 'Environment variable override support', type: 'Story', priority: 'High', version: '0.9.0', status: 'Done' },
+  ],
+};
 
 export const scorecardWeights = {
   gameday: 25,
@@ -1399,6 +1707,30 @@ export const scorecards = {
     incidents: 70,
     readiness: 76,
     notes: 'Focus on system tests and production readiness score improvements.',
+  },
+  'notification-service': {
+    gameday: 68,
+    outages: 77,
+    tests: 71,
+    incidents: 65,
+    readiness: 70,
+    notes: 'New service ramping up; needs gameday participation and broader test coverage.',
+  },
+  'audit-service': {
+    gameday: 80,
+    outages: 86,
+    tests: 82,
+    incidents: 75,
+    readiness: 84,
+    notes: 'Solid reliability; improve incident response playbooks.',
+  },
+  'config-service': {
+    gameday: 66,
+    outages: 74,
+    tests: 69,
+    incidents: 63,
+    readiness: 68,
+    notes: 'Early stage; prioritize production readiness checklist and system tests.',
   },
 };
 
