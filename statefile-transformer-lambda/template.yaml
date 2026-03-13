@@ -1,0 +1,71 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: Lambda function to transform deployment statefiles on S3 upload
+
+Parameters:
+  SourceBucketName:
+    Type: String
+    Description: S3 bucket containing the statefiles
+  SourcePrefix:
+    Type: String
+    Default: statefile/
+    Description: S3 key prefix to watch for statefile uploads
+  DestBucket:
+    Type: String
+    Default: ''
+    Description: Destination bucket for transformed files (defaults to source bucket)
+  DestPrefix:
+    Type: String
+    Default: transformed/
+    Description: S3 key prefix for transformed output files
+
+Resources:
+  StatefileTransformerFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: statefile-transformer
+      Handler: lambda_function.lambda_handler
+      Runtime: python3.12
+      Timeout: 30
+      MemorySize: 128
+      Environment:
+        Variables:
+          DEST_BUCKET: !Ref DestBucket
+          DEST_PREFIX: !Ref DestPrefix
+      Policies:
+        - S3ReadPolicy:
+            BucketName: !Ref SourceBucketName
+        - S3CrudPolicy:
+            BucketName: !If
+              - UseSourceBucket
+              - !Ref SourceBucketName
+              - !Ref DestBucket
+      Events:
+        S3Upload:
+          Type: S3
+          Properties:
+            Bucket: !Ref SourceS3Bucket
+            Events: s3:ObjectCreated:*
+            Filter:
+              S3Key:
+                Rules:
+                  - Name: prefix
+                    Value: !Ref SourcePrefix
+                  - Name: suffix
+                    Value: .json
+
+  SourceS3Bucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: !Ref SourceBucketName
+
+Conditions:
+  UseSourceBucket: !Equals [!Ref DestBucket, '']
+
+Outputs:
+  FunctionArn:
+    Description: ARN of the statefile transformer Lambda
+    Value: !GetAtt StatefileTransformerFunction.Arn
+  SourceBucket:
+    Description: Source S3 bucket
+    Value: !Ref SourceS3Bucket
